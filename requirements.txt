@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+openai
+pinecone-client
+pdfplumber
+python-docx
+python-multipart
+pydantic
+requests
+python-dotenv
