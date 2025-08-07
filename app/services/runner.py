@@ -1,13 +1,20 @@
-from app.services.parser import download_pdf_from_url, extract_text_from_pdf, chunk_text
+import json
+import numpy as np
+from app.utils.embedder import embed_query
 
-async def process_documents(doc_url: str, questions: list[str]):
-    file_path = download_pdf_from_url(doc_url)
-    raw_text = extract_text_from_pdf(file_path)
-    chunks = chunk_text(raw_text)
+def cosine_similarity(a, b):
+    a, b = np.array(a), np.array(b)
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 
-    # For now, just return a sample preview of chunks
-    return {
-        "chunk_count": len(chunks),
-        "sample_chunk": chunks[0] if chunks else "No text found",
-        "questions": questions
-    }
+def semantic_search(query: str, file_id: str, top_k: int = 3):
+    with open(f"data/{file_id}_chunks.json", "r") as f:
+        chunks = json.load(f)
+
+    with open(f"data/{file_id}_embeddings.json", "r") as f:
+        embeddings = json.load(f)
+
+    query_vec = embed_query(query)
+    scored = [(cosine_similarity(query_vec, vec), chunk) for vec, chunk in zip(embeddings, chunks)]
+    top_matches = sorted(scored, reverse=True)[:top_k]
+
+    return [{"score": round(score, 3), "clause": chunk} for score, chunk in top_matches]

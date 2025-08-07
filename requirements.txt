@@ -8,3 +8,7 @@ python-multipart
 pydantic
 requests
 python-dotenv
+tiktoken
+sentence-transformers
+faiss-cpu
+python-dotenv

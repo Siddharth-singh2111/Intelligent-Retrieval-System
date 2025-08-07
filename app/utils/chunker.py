@@ -1,12 +1,5 @@
-def chunk_text(text: str, chunk_size: int = 500, overlap: int = 50) -> list[str]:
-    chunks = []
-    start = 0
-    text_length = len(text)
+import re
 
-    while start < text_length:
-        end = start + chunk_size
-        chunk = text[start:end]
-        chunks.append(chunk)
-        start += chunk_size - overlap
-
-    return chunks
+def chunk_text(text: str, chunk_size: int = 5) -> list[str]:
+    sentences = re.split(r'(?<=[.?!])\s+', text)
+    return [' '.join(sentences[i:i+chunk_size]) for i in range(0, len(sentences), chunk_size)]
